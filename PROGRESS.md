@@ -16,11 +16,14 @@ Validator: bids-validator 2.4.1 (commit 94ea971, BIDSvue sidecar build). Rust 1.
 | M14 | done (local) | webapps worktree `../webapps-reproin`, branch `reproin-app`, commits 8441e26d + b5e9216a + 64347eec + c5217191 + 4a4304b5 + dc7d78d1 + ab46a822 (4a4304b5: patched dcm2niix dropped, app uses the converter bundled in @niivue/reproin; dc7d78d1: default example = published XA60 session, all 68 URLs pinned in the offline inventories, e2e provisioner downloads it with size/sha256 checks, e2e 5/5; ab46a822: example text discloses headers are not anonymized). `apps/reproin` from the app template; only @niivue/reproin is vendored, with a sha256 lock + pending-release note. Build, app tests 5/5, Playwright 5/5 (example → convert → ZIP, retry, cancel, local XA60 session), audit:interfaces / test:mobile / test:interface-workflows pass for reproin; full-catalog failures only in pre-existing seedseg. Browser vs native on DR session: converter-level differences only (qform floats, .bvec text, provenance header/row order). Example: published VS-SEG-001 T1 series (non-ReproIn names → Unknown rescue path). Gate: `make check-m14`. Not run: Electron offline workflow. |
 | M15 | prepared | `make check-m15` → exit 0 (2026-10-30, `.golden/check-m15.log`): m13 + m14 + versions agree, `npm pack`, `release/` deprecation patch applies; `release.yml`. Publishing, pushing, submodule pinning and HF data upload await authorization. |
 
+## Releases
+- 2026-10-30: `v0.1.20261030` (https://github.com/rordenlab/reproin-rs/releases/tag/v0.1.20261030): reproinx for linux-x64, macos-arm64, macos-x64, windows-x64, `@niivue/reproin` npm tarball, SHA256SUMS; CI green on all platforms. macOS binaries are not signed or notarized (follow-up). npm publish not done.
+
 ## Published data
 - 2026-10-30: Siemens XA60 ReproIn session (author's own, public domain, headers not anonymized) at HF `neurodeskorg/webapps` commit `0d94f8656a0727041433340f805b5e295b2a516f`, `examples/reproin/xa60/` (68 DICOM files, 34 series, 47.6 MB + README). Used as the webapp's default example and its e2e data.
 
 ## Blockers needing the user
-- Push reproin-rs to rordenlab/reproin-rs and tag a release → BIDSvue submodule pin (`crates/reproin-rs`), webapps `@niivue/reproin` pin (drop `vendor/`). CI and release.yml have never run.
+- Make rordenlab/reproin-rs public (pushed at main, tag v0.1.20261030) → then the BIDSvue submodule pin (`crates/reproin-rs`) and the webapps release-asset pins resolve for everyone.
 - Merge BIDSvue `reproin-rs` and webapps `reproin-app` branches.
 - Apply `release/dcm2niix-reproinx-deprecation.patch` to dcm2niix after the release.
 
