@@ -1,0 +1,13 @@
+[package]
+name = "reproin-core"
+description = "ReproIn DICOM-to-BIDS post-pass planner (no filesystem, no process)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
+regex-lite = "0.1"
+md-5 = "0.10"

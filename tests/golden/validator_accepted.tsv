@@ -1,0 +1,2 @@
+# dataset	code	subCode	count	reason (errors also present in the reproinx.py reference)
+7TMOTOR	SIDECAR_KEY_REQUIRED	RepetitionTimeExcitation	4	Siemens XA MP2RAGE: echo spacing is not in the DICOM (dcm2niix REPROIN.md); add from the protocol printout

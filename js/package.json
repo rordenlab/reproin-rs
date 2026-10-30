@@ -1,0 +1,11 @@
+{
+  "name": "@niivue/reproin",
+  "version": "0.1.20261030",
+  "description": "ReproIn DICOM to BIDS in the browser: dcm2niix (WASM) + reproin-rs post-pass",
+  "type": "module",
+  "main": "index.js",
+  "exports": { ".": "./index.js" },
+  "files": ["index.js", "index.d.ts", "pkg/reproin_wasm.js", "pkg/reproin_wasm_bg.wasm", "pkg/reproin_wasm.d.ts", "dcm2niix/"],
+  "license": "BSD-2-Clause",
+  "scripts": { "test": "node --test" }
+}

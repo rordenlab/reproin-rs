@@ -1,0 +1,15 @@
+[workspace]
+members = ["core", "cli", "wasm"]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "BSD-2-Clause"
+version = "0.1.20261030"
+rust-version = "1.88"
+repository = "https://github.com/rordenlab/reproin-rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

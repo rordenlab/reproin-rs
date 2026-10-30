@@ -1,0 +1,39 @@
+name: release
+# Tag vMAJOR.MINOR.YYYYMMDD: native reproinx archives + the WASM/JS package
+# from the same revision. Publishing to npm is a separate, manual step.
+on:
+  push: { tags: ["v*"] }
+permissions: { contents: write }
+jobs:
+  native:
+    strategy:
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, exe: reproinx }
+          - { os: macos-latest, target: aarch64-apple-darwin, exe: reproinx }
+          - { os: macos-latest, target: x86_64-apple-darwin, exe: reproinx }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc, exe: reproinx.exe }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: "${{ matrix.target }}" }
+      - run: cargo build --release --locked -p reproinx --target ${{ matrix.target }}
+      - shell: bash
+        run: |
+          d=reproinx-${GITHUB_REF_NAME}-${{ matrix.target }}
+          mkdir "$d" && cp target/${{ matrix.target }}/release/${{ matrix.exe }} README.md LICENSE "$d"/
+          tar czf "$d.tar.gz" "$d"
+      - uses: softprops/action-gh-release@v2
+        with: { files: "reproinx-*.tar.gz" }
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: wasm32-unknown-unknown }
+      - run: cargo install wasm-pack --version 0.13.1 --locked
+      - run: make wasm
+      - run: cd js && npm pack
+      - uses: softprops/action-gh-release@v2
+        with: { files: "js/*.tgz" }

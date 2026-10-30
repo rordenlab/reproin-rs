@@ -1,0 +1,40 @@
+diff -ru a/REPROIN.md b/REPROIN.md
+--- a/REPROIN.md	2026-10-30 11:53:34
++++ b/REPROIN.md	2026-10-30 11:53:34
+@@ -155,7 +155,11 @@
+ 
+ ---
+ 
+-## Known one-pass limitations (handled by `tools/reproinx.py`)
++## Known one-pass limitations (handled by `reproinx`)
++
++The second pass is now [`reproinx` from reproin-rs](https://github.com/rordenlab/reproin-rs)
++(Rust; command line, BIDSvue and browser). `tools/reproinx.py` is its frozen
++reference implementation and is deprecated; the description below applies to both.
+ 
+ The companion script [`tools/reproinx.py`](tools/reproinx.py) wraps dcm2niix and walks the resulting BIDS tree to address cross-series concerns. It runs `dcm2niix -f %H -ba o` (strips patient PII but keeps `AcquisitionDateTime` in the JSON sidecar), then per-subject and per-session:
+ 
+diff -ru a/tools/reproinx.py b/tools/reproinx.py
+--- a/tools/reproinx.py	2026-10-30 11:53:34
++++ b/tools/reproinx.py	2026-10-30 11:53:34
+@@ -1,6 +1,11 @@
+ #!/usr/bin/env python3
+ """reproinx — second-pass cross-series corrections for `dcm2niix -f %H`.
+ 
++DEPRECATED: superseded by `reproinx` from reproin-rs
++(https://github.com/rordenlab/reproin-rs), a Rust port with the same
++arguments and output, also used by BIDSvue and the web app. This script is
++kept as the frozen reference implementation; new fixes land in reproin-rs.
++
+ Runs dcm2niix in ReproIn one-pass mode, then walks the resulting BIDS tree to
+ fill in details that the C converter cannot resolve in a single pass. See
+ REPROIN.md for the full list of issues this script attempts to address.
+@@ -3686,6 +3691,8 @@
+                         "based ses-<YYYYMMDD...> labels (warns loudly when any "
+                         "are present, since the path still leaks the date).")
+     args = p.parse_args(argv)
++    print("reproinx.py is deprecated: install reproinx from "
++          "https://github.com/rordenlab/reproin-rs (same arguments).", file=sys.stderr)
+ 
+     indir = Path(args.indir).resolve()
+     outdir = Path(args.outdir).resolve() if args.outdir else indir

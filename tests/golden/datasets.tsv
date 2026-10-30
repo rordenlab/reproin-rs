@@ -1,0 +1,8 @@
+# name	source (dir or zip-extracted dir)	class	covers
+reproinXA60e	/Users/chris/src/bidsui/datasets/reproinXA60e_DICOM	local-required	3 subjects, ses backfill, dual-echo bold, fmap epi pairing, dwi AP/PA, scouts
+reproinXA60a	.golden/src/reproinXA60a	local-required	scouts, smt runs, __dup, GE fmap magnitude/phasediff, dir_PA typo
+physioDICOM	.golden/src/physioDICOM	local-required	physio rescue, sbref
+svsDICOM	.golden/src/svsDICOM	local-required	MRS svs, Unknown rescue
+oldenburg	.golden/src/MRI_sample_data_neuroimging_unit_oldenburg_2	local-required	non-ReproIn names: hierarchy collapse, Unknown rescue, reclassify
+3TMOTOR	/Users/chris/src/bidsui/datasets/3TMOTOR_20261009_CR	local-required	multi-echo mag/phase part entities, noRF, runs
+7TMOTOR	/Users/chris/src/bidsui/datasets/7TMOTOR_20261009_CR	local-optional	7T multi-echo mag/phase, long series

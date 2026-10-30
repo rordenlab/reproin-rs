@@ -1,0 +1,10 @@
+[package]
+name = "reproinx"
+description = "Run dcm2niix in ReproIn mode and apply second-pass BIDS fixes"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+reproin-core = { path = "../core" }

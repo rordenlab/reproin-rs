@@ -1,0 +1,38 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+permissions: { contents: read }
+jobs:
+  rust:
+    strategy:
+      fail-fast: false
+      matrix: { os: [ubuntu-latest, macos-latest, windows-latest] }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: "clippy, rustfmt" }
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --locked --workspace
+      - run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - run: cargo fmt --all --check
+      - run: cargo build --release --locked -p reproinx
+  # Differential tests: every synthetic case through the pinned reproinx.py
+  # oracle and the Rust binary; the JS host must match the binary.
+  oracle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { targets: wasm32-unknown-unknown }
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: cargo install wasm-pack --version 0.13.1 --locked
+      - run: make synth
+      - run: python3 -I tests/golden/selftest.py
+      - run: make wasm
+      - run: cd js && node --test --test-name-pattern='synthetic|zip|all-Unknown'
