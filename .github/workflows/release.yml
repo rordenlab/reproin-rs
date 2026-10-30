@@ -1,6 +1,6 @@
 name: release
-# Tag vMAJOR.MINOR.YYYYMMDD: native reproinx archives + the WASM/JS package
-# from the same revision. Publishing to npm is a separate, manual step.
+# Tag vMAJOR.MINOR.YYYYMMDD: native reproinx archives, SHA256SUMS and the
+# WASM/JS package from the same revision. Publishing to npm stays manual.
 on:
   push: { tags: ["v*"] }
 permissions: { contents: write }
@@ -9,10 +9,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, exe: reproinx }
-          - { os: macos-latest, target: aarch64-apple-darwin, exe: reproinx }
-          - { os: macos-latest, target: x86_64-apple-darwin, exe: reproinx }
-          - { os: windows-latest, target: x86_64-pc-windows-msvc, exe: reproinx.exe }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, name: linux-x64, exe: reproinx, archive: tar.gz }
+          - { os: macos-latest, target: aarch64-apple-darwin, name: macos-arm64, exe: reproinx, archive: tar.gz }
+          - { os: macos-latest, target: x86_64-apple-darwin, name: macos-x64, exe: reproinx, archive: tar.gz }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc, name: windows-x64, exe: reproinx.exe, archive: zip }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -21,11 +21,11 @@ jobs:
       - run: cargo build --release --locked -p reproinx --target ${{ matrix.target }}
       - shell: bash
         run: |
-          d=reproinx-${GITHUB_REF_NAME}-${{ matrix.target }}
+          d=reproinx-${GITHUB_REF_NAME#v}-${{ matrix.name }}
           mkdir "$d" && cp target/${{ matrix.target }}/release/${{ matrix.exe }} README.md LICENSE "$d"/
-          tar czf "$d.tar.gz" "$d"
-      - uses: softprops/action-gh-release@v2
-        with: { files: "reproinx-*.tar.gz" }
+          if [ "${{ matrix.archive }}" = zip ]; then 7z a -tzip "$d.zip" "$d" > /dev/null; else tar czf "$d.tar.gz" "$d"; fi
+      - uses: actions/upload-artifact@v4
+        with: { name: "${{ matrix.name }}", path: "reproinx-*.${{ matrix.archive }}" }
   wasm:
     runs-on: ubuntu-latest
     steps:
@@ -35,5 +35,14 @@ jobs:
       - run: cargo install wasm-pack --version 0.13.1 --locked
       - run: make wasm
       - run: cd js && npm pack
+      - uses: actions/upload-artifact@v4
+        with: { name: npm, path: "js/*.tgz" }
+  publish:
+    needs: [native, wasm]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - run: cd dist && sha256sum * > SHA256SUMS && cat SHA256SUMS
       - uses: softprops/action-gh-release@v2
-        with: { files: "js/*.tgz" }
+        with: { files: "dist/*" }

@@ -27,8 +27,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with: { targets: wasm32-unknown-unknown }
       - uses: Swatinem/rust-cache@v2
+      # The oracle's datetime.fromisoformat is version-dependent; references use 3.14.
       - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
+        with: { python-version: "3.14" }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: cargo install wasm-pack --version 0.13.1 --locked

@@ -311,6 +311,7 @@ impl TempDir {
             let n =
                 seed ^ (std::process::id() as u128) << 64 ^ i.wrapping_mul(0x9e37_79b9_7f4a_7c15);
             let p = std::env::temp_dir().join(format!("reproinx-dry-run-{n:032x}"));
+            #[cfg_attr(not(unix), allow(unused_mut))]
             let mut b = std::fs::DirBuilder::new();
             #[cfg(unix)]
             std::os::unix::fs::DirBuilderExt::mode(&mut b, 0o700);
