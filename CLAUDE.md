@@ -56,14 +56,16 @@ belongs here, in README or PROGRESS.
   (`reproin_plan`, `reproin_drop_volumes`); `src/lib/import/reproin.ts` applies ops via
   `OperationContext`. Uses `reproin-core` as a path dep (TODO in src-tauri/Cargo.toml → submodule
   `crates/reproin-rs`). Gate: `make check-m13`.
-- webapps (`../webapps-reproin`, branch `reproin-app`): `apps/reproin` vendors dcm2niix and
-  `@niivue/reproin` under `vendor/` with sha256s in `vendor/vendor.lock.json`. **Whenever `js/`
-  or the wasm changes, rebuild, recopy and refresh those hashes** (app tests check them).
+- webapps (`../webapps-reproin`, branch `reproin-app`): `apps/reproin` depends on the release
+  tarball `@niivue/reproin` (pinned URL + lockfile integrity, no vendor dir). Its Standalone dialog
+  links the `reproinx` release assets via `packages/reproin/release.json` (external pinned release:
+  repository, tag, per-target asset/bytes/sha256). **A new reproin-rs release means bumping both
+  pins there**, then `apps/reproin/validation/cli-check.mjs` (release binary vs web ZIP).
   Gate: `make check-m14`.
 
 ## Open follow-ups / user-gated
-- Push reproin-rs (rordenlab/reproin-rs) and tag a release → BIDSvue submodule pin, webapps
-  package pin (drop `vendor/`). CI (`.github/workflows`) has never run: nothing pushed.
+- Released `v0.1.20261030` (public repo, CI green). Still to do: BIDSvue path dep → submodule
+  `crates/reproin-rs`; sign/notarize the macOS `reproinx` archives; optional npm publish.
 - Optional, no urgency: in a future dcm2niix release, keep `.reproin_provenance.tsv` in
   worker-core.js and `fseek(tp, 0, SEEK_END)` before `ftell` in `reproinAppendProvenance`. Native
   Windows (MSVC) and musl builds probably repeat the header too; reproin-rs tolerates it.
